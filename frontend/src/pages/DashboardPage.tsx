@@ -98,7 +98,7 @@ export default function DashboardPage() {
       <div className="mx-auto flex h-full w-full max-w-[1400px] flex-col gap-4 rounded-[32px] border border-white/10 bg-slate-950/60 p-4 shadow-panel backdrop-blur sm:p-6">
         <header className="flex flex-col gap-4 border-b border-white/10 pb-5 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="text-xs uppercase tracking-[0.24em] text-orange-200">Production-ready AI feedback app</p>
+            <p className="text-xs uppercase tracking-[0.24em] text-orange-200">AI feedback app</p>
             <h1 className="mt-2 text-3xl font-bold text-white">Conversational Feedback Dashboard</h1>
           </div>
           <button
