@@ -1,148 +1,91 @@
-﻿# AI Feedback Collection Web Application
+AI Feedback Collection Web Application
 
-A production-ready conversational AI feedback collector built with FastAPI, LangChain, Groq, SQLAlchemy, PostgreSQL or SQLite, React, Vite, TailwindCSS, and JWT auth.
+A full-stack conversational AI feedback system built with FastAPI (backend) and React + Vite (frontend).
+It enables structured feedback collection through an intelligent chat interface powered by LLMs.
 
-## Folder Structure
-
-```text
+Tech Stack
+Backend: FastAPI, SQLAlchemy, PostgreSQL / SQLite
+Frontend: React, Vite, TailwindCSS
+Authentication: JWT-based
+AI Integration: LangChain + Groq (with fallback support)
+Key Features
+User authentication (Signup/Login)
+Conversational feedback collection system
+Persistent chat history and structured feedback storage
+AI-powered:
+Intent classification
+Sentiment analysis
+Rating extraction
+Issue classification
+Fallback logic when API keys are not configured
+Chat-style dashboard UI
+Project Structure
 conversationalfeddback/
-|-- backend/
-|   |-- app/
-|   |   |-- api/
-|   |   |   |-- deps.py
-|   |   |   `-- routes/
-|   |   |       |-- auth.py
-|   |   |       `-- chat.py
-|   |   |-- core/
-|   |   |   |-- config.py
-|   |   |   `-- security.py
-|   |   |-- db/
-|   |   |   |-- base.py
-|   |   |   `-- session.py
-|   |   |-- models/
-|   |   |-- schemas/
-|   |   `-- services/
-|   |       |-- chains/
-|   |       `-- chat_service.py
-|   |-- requirements.txt
-|   `-- .env.example
-|-- frontend/
-|   |-- src/
-|   |   |-- api/
-|   |   |-- components/
-|   |   |-- context/
-|   |   |-- pages/
-|   |   `-- types/
-|   |-- package.json
-|   `-- .env.example
-`-- README.md
-```
-
-## Features
-
-- JWT-based signup and login
-- Persistent conversations, messages, and structured feedback records
-- Stateful feedback collection engine with the required conversation states
-- LangChain chains for intent classification, rating extraction, sentiment analysis, feedback extraction, and issue classification
-- Groq LLM integration with structured JSON outputs
-- Dev-safe fallback classifiers when no Groq API key is configured
-- ChatGPT-style dashboard with conversation list and real-time style messaging UI
-
-## Backend Architecture
-
-### State Machine
-
-The conversation state is stored in the `conversations.state` column and transitions through:
-
-- `START`
-- `ASK_FEEDBACK`
-- `CLASSIFY_INTENT`
-- `ASK_RATING`
-- `HANDLE_VAGUE_RATING`
-- `POSITIVE_FLOW`
-- `NEGATIVE_FLOW`
-- `NEUTRAL_FLOW`
-- `ANALYZE_FEEDBACK`
-- `CLASSIFY_ISSUE_TYPE`
-- `STORE_FEEDBACK`
-- `END`
-
-### Main API Endpoints
-
-- `POST /api/v1/auth/signup`
-- `POST /api/v1/auth/login`
-- `POST /api/v1/chat/conversations`
-- `GET /api/v1/chat/conversations`
-- `POST /api/v1/chat/send`
-- `GET /api/v1/chat/history/{conversation_id}`
-
-## Local Setup
-
-### 1. Backend
-
-```bash
+│
+├── backend/
+│   ├── app/
+│   ├── requirements.txt
+│   └── .env.example
+│
+├── frontend/
+│   ├── src/
+│   ├── package.json
+│   └── .env.example
+│
+└── README.md
+Setup Instructions
+1. Backend Setup
 cd backend
+
+# Create virtual environment
 python -m venv .venv
+
+# Activate environment (Windows)
 .venv\Scripts\activate
+
+# Install dependencies
 pip install -r requirements.txt
+
+# Create environment file
 copy .env.example .env
-```
 
-Update `.env` with your values:
+Update .env with required values:
 
-- `SECRET_KEY`: long random string for JWT signing
-- `DATABASE_URL`: use SQLite for dev or PostgreSQL for production
-- `GROQ_API_KEY`: required for live LLM chains
-- `GROQ_MODEL`: optional model override
-- `FRONTEND_ORIGIN`: frontend URL for CORS
+SECRET_KEY=your_secret_key
+DATABASE_URL=your_database_url
+GROQ_API_KEY=your_api_key   # optional but recommended
+FRONTEND_ORIGIN=http://localhost:5173
 
 Run the backend:
 
-```bash
 uvicorn app.main:app --reload
-```
 
-### 2. Frontend
+Backend will run at:
+http://localhost:8000
 
-```bash
+2. Frontend Setup
 cd frontend
+
+# Create environment file
 copy .env.example .env
+
+# Install dependencies
 npm install
+
+# Run development server
 npm run dev
-```
 
-The frontend expects the backend at `http://localhost:8000/api/v1` by default.
+Frontend will run at:
+http://localhost:5173
 
-## Environment Examples
-
-### SQLite for development
-
-```env
+API Base URL
+http://localhost:8000/api/v1
+Database Configuration
+Development (SQLite)
 DATABASE_URL=sqlite:///./feedback_collector.db
-```
-
-### PostgreSQL for production
-
-```env
-DATABASE_URL=postgresql+psycopg2://postgres:password@localhost:5432/feedback_collector
-```
-
-## LangChain + Groq Notes
-
-`backend/app/services/chains/llm_service.py` wires each task as a separate structured chain. When `GROQ_API_KEY` is available, LangChain uses Groq with `with_structured_output(...)`. When the key is missing, the app falls back to deterministic local classifiers so the UI and state machine still work for development and demos.
-
-## Database Tables
-
-- `users`
-- `conversations`
-- `messages`
-- `feedback`
-
-## Suggested Production Hardening
-
-- Swap `Base.metadata.create_all(...)` for Alembic migrations
-- Add refresh tokens and password reset flow
-- Add rate limiting and audit logging
-- Stream assistant responses over WebSockets or Server-Sent Events
-- Add observability for LLM latency and chain failures
-- Use Redis for session-scale memory or queue-backed async processing
+Production (PostgreSQL)
+DATABASE_URL=postgresql+psycopg2://user:password@host:port/db_name
+Notes
+If GROQ_API_KEY is not provided, the system will use fallback logic for AI features.
+Ensure backend is running before starting the frontend.
+CORS is configured via FRONTEND_ORIGIN.
